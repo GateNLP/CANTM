@@ -1,0 +1,1 @@
+python evaluation.py wvCovidData/mergedData/merged_clean_ml.json --configFile configFiles/sampleConfig.cfg --cachePath TrainedModel/covid_bert --patient 4 --corpusType wvmisinfoScholar --model baselineBert
