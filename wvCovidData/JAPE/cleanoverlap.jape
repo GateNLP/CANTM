@@ -1,0 +1,12 @@
+Phase: CleanOverlap
+Input: Lookup
+Options: control = appelt
+
+Rule: CleanOverlapWeb
+Priority: 100
+
+(
+ {Lookup.majorType == oriWeb, Lookup within {Lookup.majorType == oriWeb}}
+):match
+-->
+:match.OriWeb = {webType=:match.Lookup.webType}

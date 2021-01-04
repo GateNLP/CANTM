@@ -1,0 +1,154 @@
+Phase: LooseRule
+Input: Lookup Token Split Sentence OriWeb Person Organization
+Options: control = appelt
+
+Macro: MultiMedia
+:shared{
+  //System.out.println("start");
+  //AnnotationSet matchSentSet = bindings.get("shared");
+  AnnotationSet matchSentSet = outputAS.get("dummySolution");
+  Annotation matchAnn = matchSentSet.iterator().next();
+
+  Node matchStartNode = matchAnn.getStartNode();
+  Node matchEndNode = matchAnn.getEndNode();
+  //System.out.println(matchStartNode);
+  //System.out.println(matchEndNode);
+  AnnotationSet looseMediaSet = outputAS.get("looseMedia");
+  //System.out.println(looseMediaSet);
+  looseMediaSet = looseMediaSet.get(matchAnn.getStartNode().getOffset(), matchAnn.getEndNode().getOffset());
+  Annotation looseMediaAnno = looseMediaSet.iterator().next();
+  FeatureMap looseMediaFeature = looseMediaAnno.getFeatures();
+  AnnotationSet lookupSet = inputAS.get("Lookup");
+  lookupSet = lookupSet.get(matchAnn.getStartNode().getOffset(), matchAnn.getEndNode().getOffset());
+
+  String allmedia = "";
+  for (Annotation aa:lookupSet.inDocumentOrder()){
+    FeatureMap aaFeature = aa.getFeatures();
+    //System.out.println(aaFeature);
+    if (aaFeature.containsKey("majorType")){
+      String majorType = aaFeature.get("majorType").toString();
+      //System.out.println(majorType);
+      if (majorType.equals("mediaType")){
+        String mediaType = aaFeature.get("minorType").toString();
+        //looseMediaFeature.put("mediaType", mediaType);
+        allmedia += ","+mediaType;
+        //System.out.println(mediaType);
+      }
+    }
+  }
+  looseMediaFeature.put("mediaType", allmedia);
+}
+
+
+
+
+Rule: LooseRule
+Priority: 50
+(
+ {Sentence contains {Lookup.majorType == "mediaType"}, Sentence contains {OriWeb}}
+):match
+-->
+:match.looseMedia = {rule = LooseRule},
+:match{
+  AnnotationSet matchSentSet = bindings.get("match");
+  Annotation matchAnn = matchSentSet.iterator().next();
+  Node matchStartNode = matchAnn.getStartNode();
+  Node matchEndNode = matchAnn.getEndNode();
+  AnnotationSet lookupSet = inputAS.get("Lookup");
+  lookupSet = lookupSet.get(matchAnn.getStartNode().getOffset(), matchAnn.getEndNode().getOffset());
+  AnnotationSet oriWebSet = inputAS.get("OriWeb");
+  oriWebSet = oriWebSet.get(matchAnn.getStartNode().getOffset(), matchAnn.getEndNode().getOffset());
+  AnnotationSet looseMediaSet = outputAS.get("looseMedia");
+  looseMediaSet = looseMediaSet.get(matchAnn.getStartNode().getOffset(), matchAnn.getEndNode().getOffset());
+  Annotation looseMediaAnno = looseMediaSet.iterator().next();
+  FeatureMap looseMediaFeature = looseMediaAnno.getFeatures();
+  String allmedia = "";
+  String allwebsite = "";
+  
+  //System.out.println(lookupSet);
+  for (Annotation aa:oriWebSet.inDocumentOrder()){
+    FeatureMap aaFeature = aa.getFeatures();
+    if (aaFeature.containsKey("webType")){
+      String oriWebType = aaFeature.get("webType").toString();
+      allwebsite += ","+oriWebType;
+      //looseMediaFeature.put("oriWeb", oriWebType);
+      //System.out.println(oriWebType);
+    }
+
+  }
+  for (Annotation aa:lookupSet.inDocumentOrder()){
+    FeatureMap aaFeature = aa.getFeatures();
+    if (aaFeature.containsKey("majorType")){
+      String majorType = aaFeature.get("majorType").toString();
+      if (majorType.equals("mediaType")){
+        String mediaType = aaFeature.get("minorType").toString();
+        //looseMediaFeature.put("mediaType", mediaType);
+        allmedia += ","+mediaType;
+        //System.out.println(mediaType);
+      }
+    }
+
+  }
+  looseMediaFeature.put("oriWeb", allwebsite);
+  looseMediaFeature.put("mediaType", allmedia);
+
+}
+
+Rule: ByPerOrgShare
+Priority: 70
+(
+  (SharedPre)
+  ({Lookup.majorType == mediaType}):mt
+  ({Token.kind != punctuation})[0,2]
+  {Token.root == by}
+  ({Person} | {Organization})
+  ({Token.kind != punctuation})[0,3]
+  (SharedMention)
+):shared
+-->
+:shared.looseMedia = {rule=ByPerOrgShare, mediaType=:mt.Lookup.minorType, oriWeb=unknown}
+
+Rule: OrgShare
+Priority: 70
+(
+  ({Person} | {Organization})
+  ({Token.kind != punctuation})[0,2]
+  (SharedMention)
+  (SharedPre)
+  ({Lookup.majorType == mediaType}):mt
+):shared
+-->
+:shared.looseMedia = {rule=OrgShare, mediaType=:mt.Lookup.minorType, oriWeb=unknown}
+
+Rule: OriSpreadLoose
+Priority: 70
+(
+ (  
+   ({Token.category == DT})
+   ({Token.kind != punctuation})[0,2]
+ )?
+ ({OriWeb}):oriWeb
+ ({Token.kind != punctuation})[0,2]
+ (SharedMention)
+ ({Token.kind != punctuation})[0,2]
+ ({Lookup.majorType == mediaType}):mt
+):shared
+-->
+:shared.looseMedia = {rule=OriSpreadLoose, mediaType=:mt.Lookup.minorType, oriWeb=:oriWeb.OriWeb.webType}
+
+Rule: LooseConn
+Priority: 59
+(
+  (SharedPre)
+  (
+    ({Lookup.majorType == mediaType})
+    (Conn)
+    ({Token.kind != punctuation})[0,3]
+    ({Lookup.majorType == mediaType})
+  ):mt
+  (SharedMention)
+):shared
+-->
+:shared.dummySolution = {rule=LooseConn,  oriWeb=unknown},
+:shared.looseMedia = {rule=LooseConn,  oriWeb=unknown},
+MultiMedia

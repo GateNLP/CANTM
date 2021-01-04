@@ -1,0 +1,8 @@
+covidMention.lst:covidMention
+media_audio.lst:mediaType:audio
+media_image.lst:mediaType:image
+media_text.lst:mediaType:text
+media_video.lst:mediaType:video
+media_press.lst:mediaType:pressConference
+shareStop.lst:shareStop
+website.lst:oriWeb

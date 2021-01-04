@@ -1,0 +1,6 @@
+MultiPhase:     MediaTypeCheck
+Phases:
+cleanoverlap
+sharedby
+looseRule
+finallise

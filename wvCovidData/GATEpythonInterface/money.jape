@@ -1,0 +1,14 @@
+Phase: Money
+Input: Token 
+Options: control = appelt
+ 
+Rule: Money1
+
+(  
+ {Token.string == "$"}  
+)  
+:money  
+
+-->  
+
+ :money.Money = {rule = "Money1"}

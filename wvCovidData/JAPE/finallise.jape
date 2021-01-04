@@ -1,0 +1,22 @@
+Phase: Finalise
+Input: looseMedia mediaType Lookup
+
+Rule: CleanSubscribe
+Priority: 50
+
+(
+ {looseMedia contains {Lookup.majorType == "shareStop"}}
+):match
+-->
+:match.remove = {rule = CleanSubscribe},
+:match{
+  AnnotationSet toRemove = bindings.get("match"); 
+  inputAS.removeAll(toRemove);
+}
+
+
+
+
+
+
+

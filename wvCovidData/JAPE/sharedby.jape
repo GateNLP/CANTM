@@ -1,0 +1,84 @@
+Phase: SharedBy
+Input: Lookup Token Split OriWeb Person Organization Sentence
+Options: control = appelt
+
+///////////This is the Macro///////////
+Macro: SharedMention
+(
+ {Token.root == share} | {Token.root == circulate} | {Token.root == upload} | {Token.root == claim} | {Token.root == publish} | {Token.root == uploaded} |
+ {Token.root == circulated} | {Token.root == spread} |
+ ({Token.category == VBG}
+  ({Token.kind != punctuation})[0,2]
+  ({Token.root == on} | {Token.root == in})
+ )
+)
+
+Macro: SharedFollow
+(
+  ({Token.kind != punctuation})[0,7]
+  ({Lookup.majorType == oriWeb}):oriWeb
+)
+
+Macro: SharedPre
+(
+  ({Token.category == DT})?
+  ({Token.kind != punctuation})[0,3]
+)
+
+Macro: Conn
+(
+ {Token.root == and} | {Token.root == also} |
+ (
+  {Token.root == along} {Token.root == with}
+ )
+)
+
+
+
+Rule: Sharedby
+Priority: 100
+
+(
+  (SharedPre)
+  ({Lookup.majorType == mediaType}):mt
+  ({Token.kind != punctuation})[0,8]
+  (SharedMention)
+  ({Token.kind != punctuation})[0,7]
+  ({OriWeb}):oriWeb
+):shared
+-->
+:shared.mediaType = {rule=Sharedby, mediaType=:mt.Lookup.minorType, oriWeb=:oriWeb.OriWeb.webType}
+
+Rule: NetworkSpread
+Priority: 80
+(
+ ({Token.category == DT})
+ ({Token.kind != punctuation})[0,2]
+ ({Token.root == network})
+ ({Token.kind != punctuation})[0,2]
+ (SharedMention)
+ ({Token.kind != punctuation})[0,2]
+ ({Lookup.majorType == mediaType}):mt
+ ({Token.kind != punctuation})[0,4]
+ {Lookup.majorType == covidMention}
+):shared
+-->
+:shared.mediaType = {rule=NetworkSpread, mediaType=:mt.Lookup.minorType, oriWeb=unknown}
+
+Rule: OriSpread
+Priority: 80
+(
+ (  
+   ({Token.category == DT})
+   ({Token.kind != punctuation})[0,2]
+ )?
+ ({OriWeb}):oriWeb
+ ({Token.kind != punctuation})[0,2]
+ (SharedMention) 
+ ({Token.kind != punctuation})[0,2]
+ ({Lookup.majorType == mediaType}):mt
+ ({Token.kind != punctuation})[0,4]
+ {Lookup.majorType == covidMention}
+):shared
+-->
+:shared.mediaType = {rule=OriSpread, mediaType=:mt.Lookup.minorType, oriWeb=:oriWeb.OriWeb.webType}
