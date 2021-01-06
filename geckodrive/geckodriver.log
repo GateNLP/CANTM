@@ -1,0 +1,20 @@
+1603994046103	geckodriver	INFO	Listening on 127.0.0.1:39817
+1603994046118	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileJsKOoZ"
+*** You are running in headless mode.
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new Error("", "(unknown module)"))
+1603994047924	Marionette	INFO	Listening on port 43477
+1603994048138	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.crisisgroup.org/sites/all/themes/custom/icg/js/vendor/modernizr.min.js?qiz3ga, line 4: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://www.crisisgroup.org/sites/all/themes/custom/icg/js/vendor/modernizr.min.js?qiz3ga, line 4: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://www.crisisgroup.org/sites/all/themes/custom/icg/js/vendor/modernizr.min.js?qiz3ga, line 4: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://www.crisisgroup.org/sites/all/themes/custom/icg/js/vendor/modernizr.min.js?qiz3ga, line 4: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://www.crisisgroup.org/sites/all/modules/contrib/jquery_update/replace/jquery/1.10/jquery.min.js?v=1.10.2, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+JavaScript warning: https://www.crisisgroup.org/sites/all/themes/custom/icg/dist/js/app.min.js?qiz3ga, line 1: unreachable code after return statement
+JavaScript warning: https://www.crisisgroup.org/sites/all/themes/custom/icg/dist/js/app.min.js?qiz3ga, line 2: unreachable code after return statement
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
