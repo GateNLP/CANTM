@@ -39,11 +39,15 @@ output_json = sys.argv[2]
 with open(input_json, 'r') as fin:
     data = json.load(fin)
 
-for each_data in data:
+for i, each_data in enumerate(data):
     claim,explain,country,date,factcheck_Org = download_source(each_data['Link'])
     each_data['Claim'] = claim
     each_data['Explaination'] = explain
     each_data['Country'] = country
     each_data['Date'] = date
     each_data['Factcheck_Org'] = factcheck_Org
-    break
+    print(i, len(data))
+    #break
+
+with open(output_json, 'w') as fo:
+    json.dump(data, fo)

@@ -23,7 +23,7 @@ if __name__ == "__main__":
     parser.add_argument("--splitValidation", type=float, help="split data from training for validation")
     parser.add_argument("--inspectTest", default=False, action='store_true', help="inspect testing data performance")
     parser.add_argument("--x_fields", help="x fileds", default='Claim,Explaination')
-    parser.add_argument("--y_field", help="y filed", default='selected_label')
+    parser.add_argument("--y_field", help="y filed", default='category')
     parser.add_argument("--trainOnly", help="only train the model, no split or test", default=False, action='store_true')
     parser.add_argument("--export_json", help="export json for scholar, need file path")
     parser.add_argument("--export_doc", help="export doc for npmi, need file path")

@@ -6,7 +6,7 @@ from .PostprocessorBase import ReaderPostProcessorBase
 from transformers import BertTokenizer
 
 class WVPostProcessor(ReaderPostProcessorBase):
-    def __init__(self, x_fields=['Claim', 'Explaination'], y_field='selected_label', **kwargs):
+    def __init__(self, x_fields=['Claim', 'Explaination'], y_field='category', **kwargs):
         super().__init__(**kwargs)
         self.x_fields = x_fields
         self.y_field = y_field

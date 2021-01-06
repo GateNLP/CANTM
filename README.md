@@ -16,7 +16,7 @@ Xingyi Song, Johann Petrak, Ye Jiang, Iknoor Singh, Diana Maynard, Kalina Bontch
 * Get COVID data: 
 ```
 cd wvCovidData
-python getData.py
+bash getCovidData.sh
 ```
 * Run CANTM: bash runCANTM_covid.sh
 * Run BERT: bash runBert_covid.sh

@@ -5,7 +5,7 @@ import torch
 from .ReaderBase import CLSReaderBase
 
 class WVmisInfoDataIter(CLSReaderBase):
-    def __init__(self, merged_json, label_field='selected_label', **kwargs):
+    def __init__(self, merged_json, label_field='category', **kwargs):
         super().__init__(**kwargs)
         self.label_field = label_field
 

@@ -1,1 +1,1 @@
-python evaluation.py wvCovidData/mergedData/merged_clean_ml.json --configFile configFiles/sampleConfig.cfg --cachePath TrainedModel/NVDMo_covid --patient 4 --corpusType wvmisinfoScholar --model orinvdm --earlyStopping train_ppl_loss
+python evaluation.py wvCovidData/covidCateData/merged_clean_ml.json --configFile configFiles/sampleConfig.cfg --cachePath TrainedModel/NVDMo_covid --patient 4 --corpusType wvmisinfoScholar --model orinvdm --earlyStopping train_ppl_loss
