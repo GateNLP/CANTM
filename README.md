@@ -26,7 +26,7 @@ bash getCovidData.sh
 
 
 ### Update topics with unlabelled data:
-* Update classification-aware topic on COVID (note require `bash runCANTM_covid.sh' first), the latest unlabelled data not included please contact author (via EMNLP organiser) for the data: bash updateCovid.sh 
+* Update classification-aware topic on COVID (note require `bash runCANTM_covid.sh' first), the latest unlabelled data not included please contact author. for the data: bash updateCovid.sh 
 
 ### Run Covid data on SCHOLAR:
 * Perpare data for SCHOLAR: bash outputForScholar.sh 
