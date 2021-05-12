@@ -13,6 +13,7 @@ class CLSAW_TopicModel(CLSAW_TopicModel_Base):
 
         self.bert_embedding = BERT_Embedding(config)
         bert_dim = self.bert_embedding.bert_dim
+        #print(config)
 
         if self.banlance_loss:
             self.banlance_lambda = float(math.ceil(vocab_dim/self.n_classes))
@@ -52,8 +53,23 @@ class CLSAW_TopicModel(CLSAW_TopicModel_Base):
         if pre_embd:
             bert_rep = x
         else:
-            bert_rep = self.bert_embedding(x, mask)
-            bert_rep = bert_rep[0]
+            full_bert_rep = self.bert_embedding(x, mask)
+            #print(full_bert_rep[3][11].shape)
+            #print(full_bert_rep[3][11][:,:,0].shape)
+            #print(torch.sum(full_bert_rep[3][11][:,:,0], 1).shape)
+            all_att_weights = []
+            #for layer_idx in range(len(full_bert_rep[3])):
+            #for layer_idx in range(1):
+            #    all_att_weights.append(torch.sum(full_bert_rep[3][layer_idx][:,:,0], 1).unsqueeze(0))
+            #cls_att = torch.cat(all_att_weights)
+            #print(len(full_bert_rep))
+            #print(len(full_bert_rep[2]))
+            num_layers = len(full_bert_rep[3])
+            cls_att = torch.sum(full_bert_rep[3][num_layers-2][:,:,0], 1)
+            #print(cls_att.shape)
+            #cls_att = torch.sum(cls_att, 0)
+            #print(cls_att.shape)
+            bert_rep = full_bert_rep[0]
         atted = bert_rep[:,0]
         #hidden = self.wv_hidden(atted)
         hidden = atted
@@ -147,7 +163,7 @@ class CLSAW_TopicModel(CLSAW_TopicModel_Base):
         total_loss = elbo_z1.sum() + elbo_z2.sum() + class_topic_rec_loss.sum() + classifier_loss*self.banlance_lambda*self.classification_loss_lambda
 
         if update_catopic:
-            total_loss = elbo_z2.sum()
+            total_loss = elbo_z2.sum() + class_topic_rec_loss.sum()
 
 
 
@@ -159,7 +175,10 @@ class CLSAW_TopicModel(CLSAW_TopicModel_Base):
             'cls_loss': classifier_loss,
             'class_topic_loss': class_topic_rec_loss,
             'y_hat': y_hat_logis,
-            'elbo_x': elbo_z1
+            'elbo_x': elbo_z1,
+            'cls_att':cls_att,
+            'topics':topic
+
         }
 ####################################################################################################################################################
 #        else:

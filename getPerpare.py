@@ -6,14 +6,16 @@ from pathlib import Path
 nltk.download('stopwords')
 nltk.download('punkt')
 
-model = BertModel.from_pretrained('bert-base-uncased')
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+bert_model_string = 'digitalepidemiologylab/covid-twitter-bert-v2'
+
+model = BertModel.from_pretrained(bert_model_string)
+tokenizer = BertTokenizer.from_pretrained(bert_model_string)
 
 
 script_path = os.path.abspath(__file__)
 print(script_path)
 parent = os.path.dirname(script_path)
-parent = os.path.join(parent, 'bert-base-uncased')
+parent = os.path.join(parent, bert_model_string)
 print(parent)
 
 model_save_path = os.path.join(parent,'model')

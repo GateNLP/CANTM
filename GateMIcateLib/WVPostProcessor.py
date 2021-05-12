@@ -6,14 +6,17 @@ from .PostprocessorBase import ReaderPostProcessorBase
 from transformers import BertTokenizer
 
 class WVPostProcessor(ReaderPostProcessorBase):
-    def __init__(self, x_fields=['Claim', 'Explaination'], y_field='category', **kwargs):
+    def __init__(self, x_fields=['Claim', 'Explaination'], y_field='selected_label', return_tokened=False, **kwargs):
         super().__init__(**kwargs)
         self.x_fields = x_fields
         self.y_field = y_field
+        self.return_token = return_tokened
+        self.toBow = True
         self.initProcessor()
 
     def initProcessor(self):
         bert_tokenizer_path = os.path.join(self.config['BERT'].get('bert_path'), 'tokenizer')
+        print(bert_tokenizer_path)
         self.bert_tokenizer = BertTokenizer.from_pretrained(bert_tokenizer_path)
         self.tokenizerProcessor = self.bertTokenizer
         self.word2idProcessor = self.bertWord2id
@@ -36,15 +39,19 @@ class WVPostProcessor(ReaderPostProcessorBase):
         if self.embd_ready:
             current_x = sample['embd']
         else:
-            current_x = self.x_pipeline(current_rawx, add_special_tokens=self.add_spec_tokens)
+            if self.return_token:
+                current_x, tokened = self.x_pipeline(current_rawx, add_special_tokens=self.add_spec_tokens)
+            else:
+                current_x = self.x_pipeline(current_rawx, add_special_tokens=self.add_spec_tokens)
+                tokened = None
 
         ## NLTK tokenise and remove stopwords for topic modelling
         current_x_nltk_tokened = self.nltkTokenizer(current_rawx)
         current_x_nltk_tokened = self._remove_stop_words(current_x_nltk_tokened)
-        if self.dictProcess:
+        if self.dictProcess and self.toBow:
             current_x_nltk_tokened = self.dictProcess.doc2countHot(current_x_nltk_tokened)
 
-        x=[current_x, current_x_nltk_tokened]
+        x=[current_x, current_x_nltk_tokened, tokened]
 
         y = sample[self.y_field]
         if self.label2id:

@@ -20,3 +20,11 @@ def singleProcessor_noy(raw_x):
     x = [raw_x[0]]
     return torch.tensor(x)
 
+def singleProcessor_noy_att(raw_x):
+    tokened = [raw_x[2]]
+    x = [raw_x[0]]
+    idded_words = raw_x[1]
+    torch.tensor(x)
+    torch.tensor(idded_words)
+    return torch.tensor(x), torch.tensor(idded_words), None, tokened
+

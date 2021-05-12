@@ -108,10 +108,13 @@ class ReaderPostProcessorBase:
 
 
     def x_pipeline(self, raw_x, add_special_tokens=True):
-        raw_x = self.tokenizerProcessor(raw_x)
+        tokened = self.tokenizerProcessor(raw_x)
         if self.word2id:
-            raw_x = self.word2idProcessor(raw_x, add_special_tokens=add_special_tokens)
-        return raw_x
+            raw_x = self.word2idProcessor(tokened, add_special_tokens=add_special_tokens)
+        if self.return_token:
+            return raw_x, tokened
+        else:
+            return raw_x
 
     def nltkTokenizer(self, text):
         return nltk.word_tokenize(text)

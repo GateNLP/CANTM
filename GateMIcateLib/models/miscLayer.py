@@ -155,7 +155,7 @@ class BERT_Embedding(nn.Module):
         bert_model_path = os.path.join(config['BERT'].get('bert_path'), 'model')
         self.bert_dim = int(config['BERT'].get('bert_dim'))
         self.trainable_layers = config['BERT'].get('trainable_layers')
-        self.bert = BertModel.from_pretrained(bert_model_path)
+        self.bert = BertModel.from_pretrained(bert_model_path, output_attentions=True,output_hidden_states=True)
         if self.trainable_layers:
             #print(self.trainable_layers)
             #self.bert = BertModel.from_pretrained(bert_model_path)
@@ -174,6 +174,9 @@ class BERT_Embedding(nn.Module):
             mask = x != 0
             mask.type(x.type())
         bert_rep = self.bert(x, attention_mask=mask)
+        #print(len(bert_rep))
+        #print(len(bert_rep[3]))
+        #print(bert_rep[3][11].shape)
         return bert_rep
 
 

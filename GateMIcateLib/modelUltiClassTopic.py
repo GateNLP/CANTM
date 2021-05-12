@@ -7,7 +7,6 @@ import copy
 import os
 from pathlib import Path
 import pickle
-import datetime
 from .modelUlti import modelUlti
 
 class ModelUltiClass(modelUlti):
@@ -20,11 +19,6 @@ class ModelUltiClass(modelUlti):
 
 
     def train(self, trainBatchIter, num_epohs=100, valBatchIter=None, cache_path=None, earlyStopping='cls_loss', patience=5):
-        pytorch_total_params = sum(p.numel() for p in self.net.parameters())
-        print('total_params: ',pytorch_total_params)
-        pytorch_train_params = sum(p.numel() for p in self.net.parameters() if p.requires_grad)
-        print('train_params: ',pytorch_train_params)
-
         self.bowdict = trainBatchIter.dataIter.postProcessor.dictProcess
         self.labels = trainBatchIter.dataIter.postProcessor.labelsFields
 
@@ -40,7 +34,6 @@ class ModelUltiClass(modelUlti):
         self.optimizer = optim.Adam(self.net.parameters())
         print(num_epohs)
         for epoch in range(num_epohs):
-            begin_time = datetime.datetime.now()
             all_loss = []
             all_elboz1 = []
             all_elboz2 = []
@@ -91,10 +84,9 @@ class ModelUltiClass(modelUlti):
                     print('finish training, load model from ', cache_load_path)
                     self.loadWeights(cache_load_path)
                     break
-             
-            end_time = datetime.datetime.now()
-            timeused = end_time - begin_time
-            print('epoch ', epoch, 'loss', avg_loss, ' val acc: ', output_dict['accuracy'], 'test_pplz2: ', output_dict['perplexity'], 'test_perpz1: ', output_dict['perplexity_x_only'], 'train_pplz2: ', perplexity_z2, 'train_perpz1: ', perplexity_z1, 'time: ', timeused)
+
+
+            print('epoch ', epoch, 'loss', avg_loss, ' val acc: ', output_dict['accuracy'], 'test_pplz2: ', output_dict['perplexity'], 'test_perpz1: ', output_dict['perplexity_x_only'], 'train_pplz2: ', perplexity_z2, 'train_perpz1: ', perplexity_z1)
         cache_last_path = os.path.join(self.cache_path, 'last_net.model')
         self.saveWeights(cache_last_path)
         self.saveModel(self.cache_path)
@@ -156,7 +148,10 @@ class ModelUltiClass(modelUlti):
             self.net.eval()
         i=0
         pre_embd = False
-        for x, x_bow, y in batchGen:
+        for batch_item in batchGen:    
+            x = batch_item[0]
+            x_bow = batch_item[1]
+            y = batch_item[2]
             i+=1
             print("processing batch", i, end='\r')
             if self.gpu:
@@ -190,16 +185,20 @@ class ModelUltiClass(modelUlti):
             output_dict['y'] = y
             output_dict['atted'] = atted
             output_dict['x_bow'] = x_bow
+            output_dict['all_batch_item'] = batch_item
 
             yield output_dict
 
-    def application_oneSent(self, x):
+    def application_oneSent(self, x, x_bow):
         if self.gpu:
             x = x.type(torch.cuda.LongTensor)
             x.cuda()
+            x_bow = x_bow.type(torch.cuda.FloatTensor)
+            x_bow.cuda()
 
 
-        pred, atted = self.net(x)
+
+        pred, atted = self.net(x, bow=x_bow)
         output_dict = {}
         output_dict['pred'] = pred
         output_dict['atted'] = atted
